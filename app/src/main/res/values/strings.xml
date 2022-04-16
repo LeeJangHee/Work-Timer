@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">퇴근시간확인</string>
+
+    <string name="working_start_title">출근</string>
+    <string name="working_end_title">퇴근</string>
+    <string name="working_cancel_title">취소</string>
+</resources>

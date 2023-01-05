@@ -2,9 +2,11 @@ package com.devlee.workingtimer
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.devlee.workingtimer.DateFormatUtil.toStringTime
 
 object NotificationUtil {
 
@@ -15,14 +17,24 @@ object NotificationUtil {
         val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
+        val endTime = PreferencesUtil.getEndTime().toStringTime()
+        val notificationClickIntent = PendingIntent.getActivity(
+            context,
+            0,
+            context.packageManager.getLaunchIntentForPackage(context.packageName),
+            PendingIntent.FLAG_MUTABLE
+        )
+
         val notificationBuilder = NotificationCompat.Builder(context, Consts.CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("퇴큰 알림")
-            .setContentText("퇴근 시간입니다 !!!")
+            .setContentText("퇴근 시간입니다!!!")
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                .bigText("퇴근 시간입니다 !!!"))
+                    .bigText(endTime)
+            )
             .setChannelId(Consts.CHANNEL_ID)
+            .setContentIntent(notificationClickIntent)
             .build()
 
         with(NotificationManagerCompat.from(context)) {

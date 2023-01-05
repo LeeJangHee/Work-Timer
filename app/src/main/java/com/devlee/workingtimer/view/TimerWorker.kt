@@ -6,12 +6,11 @@ import androidx.work.WorkerParameters
 import com.devlee.workingtimer.NotificationUtil
 
 class TimerWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
-    private val workerContext = context
 
     override fun doWork(): Result {
         return try {
 
-            NotificationUtil.create(workerContext)
+            NotificationUtil.create(applicationContext)
 
             Result.success()
         } catch (e: Exception) {

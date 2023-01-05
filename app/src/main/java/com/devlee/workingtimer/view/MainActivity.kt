@@ -10,15 +10,19 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import com.devlee.workingtimer.SharedPreferencesUtil
+import com.devlee.workingtimer.NotificationUtil
+import com.devlee.workingtimer.PreferencesUtil
 import com.devlee.workingtimer.broadcast.BootReceiver
 import com.devlee.workingtimer.databinding.ActivityMainBinding
-import com.devlee.workingtimer.hour
 import com.devlee.workingtimer.now
+import com.devlee.workingtimer.toHour
 import kotlinx.coroutines.flow.collect
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = this.javaClass.simpleName
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var alarmIntent: PendingIntent
@@ -30,9 +34,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
-            endTime = SharedPreferencesUtil.getEndTime()
+            endTime = PreferencesUtil.getEndTime()
+            workingTime = PreferencesUtil.getWorkingTime().toHour()
         }
         setContentView(binding.root)
+        binding.executePendingBindings()
+
+        if (now >= PreferencesUtil.getEndTime()) {
+            PreferencesUtil.removeEndTime()
+            binding.endTime = 0L
+        }
+        NotificationUtil.clear(this)
 
         val alarmMgr = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val receiver = ComponentName(this, BootReceiver::class.java)
@@ -47,24 +59,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.button.setOnClickListener {
-            if (SharedPreferencesUtil.getEndTime() == 0L) {
-                SharedPreferencesUtil.setEndTime(now + 8.hour)
+            val alarmTime = now + PreferencesUtil.getWorkingTime()
+            if (PreferencesUtil.getEndTime() == 0L) {
+                PreferencesUtil.setEndTime(alarmTime)
                 alarmMgr.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
-                    now + 8.hour,
+                    alarmTime,
                     alarmIntent
                 )
             } else {
-                SharedPreferencesUtil.removeEndTime()
+                PreferencesUtil.removeEndTime()
                 alarmMgr.cancel(alarmIntent)
             }
-            viewModel.getEndTimeFlow(SharedPreferencesUtil.getEndTime())
+            viewModel.getEndTimeFlow(PreferencesUtil.getEndTime())
 
+        }
+
+        binding.workingTimeEdit.doAfterTextChanged { editable ->
+            editable?.let {
+                PreferencesUtil.setWorkingTime(it.toString())
+            }
         }
 
         lifecycleScope.launchWhenResumed {
             viewModel.timerFlow.collect {
                 binding.endTime = it
+                binding.workingTimeEdit.isEnabled = it <= 0
             }
         }
     }

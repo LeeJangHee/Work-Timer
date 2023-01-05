@@ -13,6 +13,8 @@ object DateFormatUtil {
     private val yearFormatter = DateTimeFormatter.ofPattern("yyyy")
     private val yearMonthFormatter = DateTimeFormatter.ofPattern("yyyy. MM")
 
+    fun Long.toStringTime()  = getTimer(this)
+
     fun getTodayDate(): String {
         return getAllDate(LocalDate.now())
     }

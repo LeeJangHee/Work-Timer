@@ -21,3 +21,12 @@ fun TextView.setTimerText(endTime: Long) {
         text = DateFormatUtil.getTimer(endTime)
     }
 }
+
+@BindingAdapter("workingTimeText")
+fun TextView.setWorkingTimeText(workingTime: Long) {
+    text = if (workingTime <= 0) {
+        null
+    } else {
+        workingTime.toString()
+    }
+}

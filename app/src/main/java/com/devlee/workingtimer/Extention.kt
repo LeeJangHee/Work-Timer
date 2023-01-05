@@ -26,6 +26,7 @@ val Int.hour: Long
 val now: Long
     get() = System.currentTimeMillis()
 
+fun Long.toHour() = this / HOUR
 
 fun sleep(time: Long) {
     try {

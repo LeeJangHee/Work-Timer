@@ -9,7 +9,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.devlee.workingtimer.Consts.ENQUEUE_WORK_NAME
-import com.devlee.workingtimer.SharedPreferencesUtil
+import com.devlee.workingtimer.PreferencesUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,8 +18,10 @@ class MainViewModel(application: Application): ViewModel() {
 
     private val workManager = WorkManager.getInstance(application)
 
-    private var timerMutableFlow = MutableStateFlow(SharedPreferencesUtil.getEndTime())
+    private var timerMutableFlow = MutableStateFlow(PreferencesUtil.getEndTime())
     val timerFlow = timerMutableFlow.asStateFlow()
+
+
 
     @SuppressLint("EnqueueWork")
     fun applyTimer() {
@@ -45,6 +47,4 @@ class ViewModelFactory(private val application: Application): ViewModelProvider.
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewModel(application) as T
     }
-
-
 }

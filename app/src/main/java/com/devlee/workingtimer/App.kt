@@ -20,7 +20,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        SharedPreferencesUtil.init(this)
+        PreferencesUtil.init(this)
         instance = this
     }
 }

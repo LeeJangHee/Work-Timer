@@ -2,12 +2,14 @@ package com.devlee.workingtimer
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 
-object SharedPreferencesUtil {
+object PreferencesUtil {
 
     private const val PREF_NAME = "SharedPreferencesUtil"
     private const val END_TIME_KEY = "end_time"
+    private const val WORKING_TIME_KEY = "working_time"
 
 
     private lateinit var pref: SharedPreferences
@@ -20,9 +22,9 @@ object SharedPreferencesUtil {
 
 
     fun setEndTime(endTime: Long = 0L) {
-        val edit = pref.edit()
-        edit.putLong(END_TIME_KEY, endTime)
-        edit.apply()
+        pref.edit {
+            putLong(END_TIME_KEY, endTime)
+        }
     }
 
     fun getEndTime(): Long {
@@ -30,9 +32,20 @@ object SharedPreferencesUtil {
     }
 
     fun removeEndTime() {
-        val edit = pref.edit()
-        edit.remove(END_TIME_KEY)
-        edit.commit()
+        pref.edit {
+            remove(END_TIME_KEY)
+        }
+    }
+
+    fun setWorkingTime(hourStr: String) {
+        val workingTime = if (hourStr.isNotEmpty()) hourStr.toInt().hour else 0L
+        pref.edit {
+            putLong(WORKING_TIME_KEY, workingTime)
+        }
+    }
+
+    fun getWorkingTime(): Long {
+        return pref.getLong(WORKING_TIME_KEY, 0L)
     }
 
 }

@@ -30,3 +30,12 @@ fun TextView.setWorkingTimeText(workingTime: Long) {
         workingTime.toString()
     }
 }
+
+@BindingAdapter("lastTimeText")
+fun TextView.setLastTimeText(lastTime: Long) {
+    text = if (lastTime == 0L) {
+        "최근 저장된 시간이 없습니다."
+    } else {
+        "최근 저장된 퇴근시간\n${DateFormatUtil.yearMonthDayTime(lastTime)}"
+    }
+}

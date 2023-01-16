@@ -10,6 +10,8 @@ object PreferencesUtil {
     private const val PREF_NAME = "SharedPreferencesUtil"
     private const val END_TIME_KEY = "end_time"
     private const val WORKING_TIME_KEY = "working_time"
+    private const val LAST_TIME = "last_time"
+
 
 
     private lateinit var pref: SharedPreferences
@@ -46,6 +48,16 @@ object PreferencesUtil {
 
     fun getWorkingTime(): Long {
         return pref.getLong(WORKING_TIME_KEY, 0L)
+    }
+
+    fun setLastTime(time: Long) {
+        pref.edit {
+            putLong(LAST_TIME, time)
+        }
+    }
+
+    fun getLastTme(): Long {
+        return pref.getLong(LAST_TIME, 0L)
     }
 
 }

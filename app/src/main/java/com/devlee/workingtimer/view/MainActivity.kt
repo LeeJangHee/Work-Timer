@@ -19,6 +19,7 @@ import com.devlee.workingtimer.databinding.ActivityMainBinding
 import com.devlee.workingtimer.now
 import com.devlee.workingtimer.toHour
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
             endTime = PreferencesUtil.getEndTime()
             workingTime = PreferencesUtil.getWorkingTime().toHour()
+            lastTime = PreferencesUtil.getLastTme()
         }
         setContentView(binding.root)
         binding.executePendingBindings()
@@ -58,15 +60,23 @@ class MainActivity : AppCompatActivity() {
             PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         }
 
+        val clockIntent = Intent(this, AlarmActivity::class.java).let { intent ->
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
         binding.button.setOnClickListener {
             val alarmTime = now + PreferencesUtil.getWorkingTime()
             if (PreferencesUtil.getEndTime() == 0L) {
                 PreferencesUtil.setEndTime(alarmTime)
-                alarmMgr.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    alarmTime,
+                alarmMgr.setAlarmClock(
+                    AlarmManager.AlarmClockInfo(alarmTime, clockIntent),
                     alarmIntent
                 )
+//                alarmMgr.setExactAndAllowWhileIdle(
+//                    AlarmManager.RTC_WAKEUP,
+//                    alarmTime,
+//                    alarmIntent
+//                )
             } else {
                 PreferencesUtil.removeEndTime()
                 alarmMgr.cancel(alarmIntent)
@@ -82,9 +92,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launchWhenResumed {
-            viewModel.timerFlow.collect {
-                binding.endTime = it
-                binding.workingTimeEdit.isEnabled = it <= 0
+            launch {
+                viewModel.timerFlow.collect {
+                    binding.endTime = it
+                    binding.workingTimeEdit.isEnabled = it <= 0
+                    if (it > 0) {
+                        viewModel.setLastTimeFLow(it)
+                    }
+                }
+            }
+
+            launch {
+                viewModel.lastTimeFlow.collect {
+                    binding.lastTime = it
+                }
             }
         }
     }

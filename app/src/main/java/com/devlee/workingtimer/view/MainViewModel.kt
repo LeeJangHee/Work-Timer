@@ -21,7 +21,8 @@ class MainViewModel(application: Application): ViewModel() {
     private var timerMutableFlow = MutableStateFlow(PreferencesUtil.getEndTime())
     val timerFlow = timerMutableFlow.asStateFlow()
 
-
+    private var _lastTimeMutableFlow = MutableStateFlow(PreferencesUtil.getLastTme())
+    val lastTimeFlow = _lastTimeMutableFlow.asStateFlow()
 
     @SuppressLint("EnqueueWork")
     fun applyTimer() {
@@ -37,6 +38,11 @@ class MainViewModel(application: Application): ViewModel() {
 
     fun getEndTimeFlow(time: Long) = viewModelScope.launch {
         timerMutableFlow.emit(time)
+    }
+
+    fun setLastTimeFLow(last: Long) = viewModelScope.launch {
+        PreferencesUtil.setLastTime(last)
+        _lastTimeMutableFlow.emit(last)
     }
 
 

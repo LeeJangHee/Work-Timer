@@ -25,6 +25,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".view.AlarmActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false" />
+
         <receiver android:name=".broadcast.BootReceiver" />
     </application>
 

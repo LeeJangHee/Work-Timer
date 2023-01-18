@@ -14,9 +14,9 @@ class NotificationReceiver : BroadcastReceiver() {
             PowerManagerUtil.acquire()
             NotificationUtil.notify(context)
             AudioUtil.startAudio()
-            context.startActivity(Intent(context, AlarmActivity::class.java).apply {
-                this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
+//            context.startActivity(Intent(context, AlarmActivity::class.java).apply {
+//                this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            })
         }
     }
 }

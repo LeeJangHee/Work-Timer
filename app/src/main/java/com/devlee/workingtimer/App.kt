@@ -1,6 +1,10 @@
 package com.devlee.workingtimer
 
 import android.app.Application
+import com.devlee.workingtimer.util.AudioUtil
+import com.devlee.workingtimer.util.NotificationUtil
+import com.devlee.workingtimer.util.PowerManagerUtil
+import com.devlee.workingtimer.util.PreferencesUtil
 
 
 class App : Application() {
@@ -22,5 +26,8 @@ class App : Application() {
         super.onCreate()
         PreferencesUtil.init(this)
         instance = this
+        AudioUtil.initAudioPlayer(this)
+        NotificationUtil.create(this)
+        PowerManagerUtil.create(this)
     }
 }

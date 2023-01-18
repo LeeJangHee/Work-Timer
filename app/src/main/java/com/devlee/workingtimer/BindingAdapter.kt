@@ -3,6 +3,7 @@ package com.devlee.workingtimer
 import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.devlee.workingtimer.util.DateFormatUtil
 
 @BindingAdapter("buttonText")
 fun Button.setButtonText(endTime: Long) {

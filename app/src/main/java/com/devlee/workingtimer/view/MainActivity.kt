@@ -12,12 +12,18 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import com.devlee.workingtimer.NotificationUtil
-import com.devlee.workingtimer.PreferencesUtil
-import com.devlee.workingtimer.broadcast.BootReceiver
+import com.devlee.workingtimer.util.NotificationUtil
+import com.devlee.workingtimer.util.PreferencesUtil
+import com.devlee.workingtimer.broadcast.NotificationReceiver
 import com.devlee.workingtimer.databinding.ActivityMainBinding
 import com.devlee.workingtimer.now
+import com.devlee.workingtimer.second
 import com.devlee.workingtimer.toHour
+import com.devlee.workingtimer.util.AlarmManagerUtl
+import com.devlee.workingtimer.util.AlarmManagerUtl.getAlarmIntent
+import com.devlee.workingtimer.util.AlarmManagerUtl.initAlarmClock
+import com.devlee.workingtimer.util.AlarmManagerUtl.testAlarmClock
+import com.devlee.workingtimer.util.PowerManagerUtil
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -26,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private val TAG = this.javaClass.simpleName
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var alarmIntent: PendingIntent
     private val viewModel: MainViewModel by viewModels {
         ViewModelFactory(application)
     }
@@ -46,43 +51,23 @@ class MainActivity : AppCompatActivity() {
             PreferencesUtil.removeEndTime()
             binding.endTime = 0L
         }
+
         NotificationUtil.clear(this)
+        PowerManagerUtil.release()
 
-        val alarmMgr = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val receiver = ComponentName(this, BootReceiver::class.java)
-        packageManager.setComponentEnabledSetting(
-            receiver,
-            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
-            PackageManager.DONT_KILL_APP
-        )
-
-        alarmIntent = Intent(this, BootReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        }
-
-        val clockIntent = Intent(this, AlarmActivity::class.java).let { intent ->
-            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        }
+        val alarmMgr = AlarmManagerUtl.createAlarmManager(this)
 
         binding.button.setOnClickListener {
             val alarmTime = now + PreferencesUtil.getWorkingTime()
             if (PreferencesUtil.getEndTime() == 0L) {
                 PreferencesUtil.setEndTime(alarmTime)
-                alarmMgr.setAlarmClock(
-                    AlarmManager.AlarmClockInfo(alarmTime, clockIntent),
-                    alarmIntent
-                )
-//                alarmMgr.setExactAndAllowWhileIdle(
-//                    AlarmManager.RTC_WAKEUP,
-//                    alarmTime,
-//                    alarmIntent
-//                )
+                alarmMgr.initAlarmClock(this)
+//                alarmMgr.testAlarmClock(this)
             } else {
                 PreferencesUtil.removeEndTime()
-                alarmMgr.cancel(alarmIntent)
+                alarmMgr.cancel(this.getAlarmIntent())
             }
             viewModel.getEndTimeFlow(PreferencesUtil.getEndTime())
-
         }
 
         binding.workingTimeEdit.doAfterTextChanged { editable ->

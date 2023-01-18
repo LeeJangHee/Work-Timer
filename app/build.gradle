@@ -107,8 +107,4 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     //noinspection GradleDependency
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-
-
-    def work_version = "2.7.1"
-    implementation "androidx.work:work-runtime-ktx:$work_version"
 }

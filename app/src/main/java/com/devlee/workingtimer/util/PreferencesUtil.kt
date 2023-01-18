@@ -1,8 +1,9 @@
-package com.devlee.workingtimer
+package com.devlee.workingtimer.util
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.devlee.workingtimer.hour
 import com.google.gson.Gson
 
 object PreferencesUtil {
@@ -11,6 +12,7 @@ object PreferencesUtil {
     private const val END_TIME_KEY = "end_time"
     private const val WORKING_TIME_KEY = "working_time"
     private const val LAST_TIME = "last_time"
+    private const val SYSTEM_VOLUME = "system_volume"
 
 
 
@@ -58,6 +60,16 @@ object PreferencesUtil {
 
     fun getLastTme(): Long {
         return pref.getLong(LAST_TIME, 0L)
+    }
+
+    fun setSystemVolume(volume: Int) {
+        pref.edit {
+            putInt(SYSTEM_VOLUME, volume)
+        }
+    }
+
+    fun getSystemVolume(): Int {
+        return pref.getInt(SYSTEM_VOLUME, 0)
     }
 
 }

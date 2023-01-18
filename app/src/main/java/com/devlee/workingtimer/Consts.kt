@@ -9,7 +9,6 @@ object Consts {
     const val CHANNEL_ID = "work_channel_id"
     const val CHANNEL_NAME = "work_channel_name"
 
-    const val TIMER_WORK_KEY = "time_work_key"
 
-    const val ENQUEUE_WORK_NAME = "enqueue_work_name"
+    const val ACTION_STOP_ALARM_SOUND = "action_stop_alarm_sound"
 }
